@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 Painel Admin - Formulários Baby RP 🌟</title>
+    <link rel="stylesheet" href="admin-style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Tela de Login -->
+    <div class="login-container" id="loginContainer">
+        <div class="login-box">
+            <div class="login-header">
+                <h1>🔐 Acesso Administrativo</h1>
+                <div class="school-name-login">🏫 Centro Lisboa Escolar 🏫</div>
+                <p>Digite a senha para acessar o painel administrativo</p>
+            </div>
+            
+            <form class="login-form" id="loginForm">
+                <div class="input-group">
+                    <label for="adminPassword">🔑 Senha de Administrador:</label>
+                    <input type="password" id="adminPassword" placeholder="Digite a senha..." required>
+                    <div class="password-hint">✨ Apenas administradores autorizados podem acessar este painel mágico! 🌟</div>
+                </div>
+                
+                <button type="submit" class="login-btn">
+                    🚀 Entrar no Painel
+                </button>
+                
+                <div class="login-footer">
+                    <p>👤 Apenas administradores autorizados</p>
+                </div>
+            </form>
+        </div>
+        
+        <div class="login-particles" id="loginParticles"></div>
+    </div>
+
+    <!-- Painel Admin (oculto inicialmente) -->
+    <div class="admin-container" id="adminPanel" style="display: none;">
+        <div class="floating-particles" id="particles"></div>
+        
+        <div class="admin-header">
+            <div class="logout-section">
+                <button class="logout-btn" onclick="logout()">🚪 Sair</button>
+            </div>
+            <div class="school-name-admin">🏫 Centro Lisboa Escolar 🏫</div>
+            <h1>🎯 Painel Administrativo - Baby RP 🌟</h1>
+            <div class="admin-stats">
+                <div class="stat-card pending">
+                    <span class="stat-number" id="pendingCount">0</span>
+                    <span class="stat-label">Pendentes</span>
+                </div>
+                <div class="stat-card approved">
+                    <span class="stat-number" id="approvedCount">0</span>
+                    <span class="stat-label">Aprovados</span>
+                </div>
+                <div class="stat-card rejected">
+                    <span class="stat-number" id="rejectedCount">0</span>
+                    <span class="stat-label">Reprovados</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="tabs-container">
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="pending">
+                    ⏳ Pendentes <span class="tab-count" id="pendingTabCount">0</span>
+                </button>
+                <button class="tab-btn" data-tab="approved">
+                    ✅ Aprovados <span class="tab-count" id="approvedTabCount">0</span>
+                </button>
+                <button class="tab-btn" data-tab="rejected">
+                    ❌ Reprovados <span class="tab-count" id="rejectedTabCount">0</span>
+                </button>
+            </div>
+
+            <!-- Aba Pendentes -->
+            <div class="tab-content active" id="pending">
+                <div class="content-header">
+                    <h2>⏳ Formulários Pendentes</h2>
+                    <div class="actions">
+                        <button class="btn btn-success" onclick="approveAll()">✅ Aprovar Todos</button>
+                        <button class="btn btn-danger" onclick="rejectAll()">❌ Reprovar Todos</button>
+                        <button class="btn btn-info" onclick="refreshData()">🔄 Atualizar</button>
+                    </div>
+                </div>
+                <div class="forms-grid" id="pendingForms">
+                    <!-- Formulários pendentes serão carregados aqui -->
+                </div>
+            </div>
+
+            <!-- Aba Aprovados -->
+            <div class="tab-content" id="approved">
+                <div class="content-header">
+                    <h2>✅ Formulários Aprovados</h2>
+                    <div class="actions">
+                        <button class="btn btn-warning" onclick="moveAllToPending('approved')">⏳ Mover Todos para Pendentes</button>
+                        <button class="btn btn-info" onclick="exportApproved()">📊 Exportar Lista</button>
+                    </div>
+                </div>
+                <div class="forms-grid" id="approvedForms">
+                    <!-- Formulários aprovados serão carregados aqui -->
+                </div>
+            </div>
+
+            <!-- Aba Reprovados -->
+            <div class="tab-content" id="rejected">
+                <div class="content-header">
+                    <h2>❌ Formulários Reprovados</h2>
+                    <div class="actions">
+                        <button class="btn btn-warning" onclick="moveAllToPending('rejected')">⏳ Mover Todos para Pendentes</button>
+                        <button class="btn btn-danger" onclick="clearRejected()">🗑️ Limpar Lista</button>
+                    </div>
+                </div>
+                <div class="forms-grid" id="rejectedForms">
+                    <!-- Formulários reprovados serão carregados aqui -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para visualizar formulário completo -->
+    <div class="modal" id="formModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📋 Detalhes do Formulário</h3>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Conteúdo do formulário será carregado aqui -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" onclick="approveFromModal()">✅ Aprovar</button>
+                <button class="btn btn-danger" onclick="rejectFromModal()">❌ Reprovar</button>
+                <button class="btn btn-secondary" onclick="closeModal()">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para adicionar comentário de reprovação -->
+    <div class="modal" id="rejectModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>❌ Motivo da Reprovação</h3>
+                <button class="close-btn" onclick="closeRejectModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <textarea id="rejectReason" placeholder="Digite o motivo da reprovação..." rows="5"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" onclick="confirmReject()">❌ Confirmar Reprovação</button>
+                <button class="btn btn-secondary" onclick="closeRejectModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="admin-script.js"></script>
+</body>
+</html>
